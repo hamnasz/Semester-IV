@@ -10,12 +10,21 @@ Welcome to the Semester IV course repository. This document serves as a guide to
    - [Database](#database)
      - [ER Diagrams](#er-diagrams)
      - [SQL Queries](#sql-queries)
+     - [Mids](#database-mids)
+   - [Entrepreneurship](#entrepreneurship)
+     - [Mids](#entrepreneurship-mids)
    - [Linear Algebra](#linear-algebra)
      - [Matrices](#matrices)
      - [Vector Spaces](#vector-spaces)
+     - [Mids](#linear-algebra-mids)
    - [Machine Learning](#machine-learning)
      - [Supervised Learning](#supervised-learning)
      - [Unsupervised Learning](#unsupervised-learning)
+     - [Mids](#machine-learning-mids)
+   - [Operating System](#operating-system)
+     - [Mids](#operating-system-mids)
+   - [Psychology](#psychology)
+     - [Mids](#psychology-mids)
 4. [Contributing](#contributing)
 5. [License](#license)
 
@@ -23,7 +32,7 @@ Welcome to the Semester IV course repository. This document serves as a guide to
 
 ## Introduction
 
-This repository contains all the materials for the Semester IV course, organized into folders based on topics such as Database, Linear Algebra, and Machine Learning.
+This repository contains all the materials for the Semester IV course, organized into folders based on topics such as Database, Linear Algebra, Machine Learning, and more.
 
 ## How to Navigate
 
@@ -40,16 +49,31 @@ If you're new to GitHub:
 
 - [📂 ER Diagrams](./database/er-diagrams/)
 - [📂 SQL Queries](./database/sql-queries/)
+- [📂 Mids Slides](./database/mids/slides/)
+
+### Entrepreneurship
+
+- [📂 Mids Slides](./entrepreneurship/mids/slides/)
 
 ### Linear Algebra
 
 - [📂 Matrices](./linear-algebra/matrices/)
 - [📂 Vector Spaces](./linear-algebra/vector-spaces/)
+- [📂 Mids Slides](./linear-algebra/mids/slides/)
 
 ### Machine Learning
 
 - [📂 Supervised Learning](./machine-learning/supervised-learning/)
 - [📂 Unsupervised Learning](./machine-learning/unsupervised-learning/)
+- [📂 Mids Slides](./machine-learning/mids/slides/)
+
+### Operating System
+
+- [📂 Mids Slides](./operating-system/mids/slides/)
+
+### Psychology
+
+- [📂 Mids Slides](./psychology/mids/slides/)
 
 ## Contributing
 
