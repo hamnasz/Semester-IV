@@ -22,7 +22,8 @@ git stash pop || { echo "Failed to reapply stashed changes"; exit 1; }
 git add . || { echo "Failed to stage changes"; exit 1; }
 
 # Commit the changes with a default message
-git commit -m "Automated commit: $(date)" || { echo "Failed to commit changes"; exit 1; }
+commit_time=$(TZ=Asia/Karachi date)
+git commit -m "Commit: $commit_time" || { echo "Failed to commit changes"; exit 1; }
 
 # Push to the remote repository
 git push -u origin main || { echo "Failed to push changes to remote repository"; exit 1; }
