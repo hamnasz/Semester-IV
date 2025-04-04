@@ -8,25 +8,11 @@ Welcome to the Semester IV course repository. This document serves as a guide to
 2. [How to Navigate](#how-to-navigate)
 3. [Folders](#folders)
    - [Database](#database)
-     - [ER Diagrams](#er-diagrams)
-     - [SQL Queries](#sql-queries)
-     - [Mids](#database-mids)
    - [Entrepreneurship](#entrepreneurship)
-     - [Mids](#entrepreneurship-mids)
    - [Linear Algebra](#linear-algebra)
-     - [Matrices](#matrices)
-     - [Vector Spaces](#vector-spaces)
-     - [Mids](#linear-algebra-mids)
    - [Machine Learning](#machine-learning)
-     - [Supervised Learning](#supervised-learning)
-     - [Unsupervised Learning](#unsupervised-learning)
-     - [Mids](#machine-learning-mids)
    - [Operating System](#operating-system)
-     - [Mids](#operating-system-mids)
    - [Psychology](#psychology)
-     - [Mids](#psychology-mids)
-4. [Contributing](#contributing)
-5. [License](#license)
 
 ---
 
@@ -40,40 +26,41 @@ To access the course materials:
 1. Click on the folder or subfolder name in the sections below.
 2. The link will take you directly to the relevant folder or file.
 
-If you're new to GitHub:
-- You don't need to download anything. Just click the links to view the materials directly in your browser.
+---
 
 ## Folders
 
 ### Database
 
-- [📂 ER Diagrams](./database/er-diagrams/)
-- [📂 SQL Queries](./database/sql-queries/)
-- [📂 Mids Slides](./database/mids/slides/)
+- [📂 Mids](./Database/Mids/)
+- [📂 Slides](./Database/Mids/Slides/)
 
 ### Entrepreneurship
 
-- [📂 Mids Slides](./entrepreneurship/mids/slides/)
+- [📂 Mids](./Entrepreneurship/Mids/)
+- [📂 Slides](./Entrepreneurship/Mids/Slides/)
 
 ### Linear Algebra
 
-- [📂 Matrices](./linear-algebra/matrices/)
-- [📂 Vector Spaces](./linear-algebra/vector-spaces/)
-- [📂 Mids Slides](./linear-algebra/mids/slides/)
+- [📂 Mids](./Linear%20Algebra/Mids/)
+- [📂 Ex](./Linear%20Algebra/Mids/Ex/)
 
 ### Machine Learning
 
-- [📂 Supervised Learning](./machine-learning/supervised-learning/)
-- [📂 Unsupervised Learning](./machine-learning/unsupervised-learning/)
-- [📂 Mids Slides](./machine-learning/mids/slides/)
+- [📂 Mids](./Machine%20Learning/Mids/)
+- [📂 Slides](./Machine%20Learning/Mids/Slides/)
 
 ### Operating System
 
-- [📂 Mids Slides](./operating-system/mids/slides/)
+- [📂 Mids](./Operating%20System/Mids/)
+- [📂 Slides](./Operating%20System/Mids/Slides/)
 
 ### Psychology
 
-- [📂 Mids Slides](./psychology/mids/slides/)
+- [📂 Mids](./Psychology/Mids/)
+- [📂 Slides](./Psychology/Mids/Slides/)
+
+---
 
 ## Contributing
 
