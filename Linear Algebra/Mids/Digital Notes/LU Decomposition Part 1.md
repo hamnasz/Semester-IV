@@ -49,7 +49,7 @@ $$
 
 ---
 
-### 🧠 Memory Tip:
+### 💡 Memory Tip:
 > **L** has 1s *on* the diagonal.  
 > **U** has 0s *below* the diagonal.
 
@@ -173,4 +173,23 @@ Would you like help with that step?
 
 Think of **L** as a **Left staircase**  
 Think of **U** as an **Upper triangle**
+
+```
+L = 1 . .
+    # 1 .
+    # # 1
+
+U = # # #
+    0 # #
+    0 0 #
+```
+
+---
+
+## 📘 Want More?
+
+Would you like:
+- Practice problems with step-by-step LU decomposition?
+- A shortcut for 2x2 LU?
+- Or move to using LU for solving equations (Ax = b)?
 
