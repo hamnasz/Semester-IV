@@ -22,7 +22,8 @@ This is especially useful for solving systems of equations like **Ax = b** quick
 
 ### Example:
 
-Let:  
+Let:
+
 $$
 A = \begin{bmatrix}
 2 & 3 & 1 \\
@@ -31,7 +32,8 @@ A = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-We want:  
+We want:
+
 $$
 L = \begin{bmatrix}
 1 & 0 & 0 \\
@@ -44,6 +46,8 @@ u_{11} & u_{12} & u_{13} \\
 0 & 0 & u_{33}
 \end{bmatrix}
 $$
+
+---
 
 ### 🧠 Memory Tip:
 > **L** has 1s *on* the diagonal.  
@@ -59,11 +63,12 @@ From matrix A:
 - \( u_{12} = 3 \)
 - \( u_{13} = 1 \)
 
-Now calculate:  
-- \( l_{21} = \frac{4}{2} = 2 \)  
+Now calculate:
+
+- \( l_{21} = \frac{4}{2} = 2 \)
 - \( l_{31} = \frac{6}{2} = 3 \)
 
-Update:
+Updated so far:
 
 $$
 L = \begin{bmatrix}
@@ -82,22 +87,28 @@ $$
 
 ### ✅ Step 2: Second row of U
 
-For Row 2:  
+For Row 2:
+
 $$
-[4, 7, 3] - 2 × [2, 3, 1] = [0, 1, 1]
-$$  
+[4, 7, 3] - 2 \times [2, 3, 1] = [0, 1, 1]
+$$
+
 So:
+
 - \( u_{22} = 1 \)
 - \( u_{23} = 1 \)
 
-For Row 3:  
+For Row 3:
+
 $$
-[6, 18, 5] - 3 × [2, 3, 1] = [0, 9, 2]
-$$  
+[6, 18, 5] - 3 \times [2, 3, 1] = [0, 9, 2]
+$$
+
 Then:
+
 - \( l_{32} = \frac{9}{1} = 9 \)
 
-Update:
+Updated:
 
 $$
 L = \begin{bmatrix}
@@ -116,12 +127,14 @@ $$
 
 ### ✅ Step 3: Last element of U
 
-Row 3 updated: [0, 9, 2]  
-Now subtract:  
+Now subtract:
+
 $$
-[0, 9, 2] - 9 × [0, 1, 1] = [0, 0, -7]
-$$  
+[0, 9, 2] - 9 \times [0, 1, 1] = [0, 0, -7]
+$$
+
 So:
+
 - \( u_{33} = -7 \)
 
 Final result:
@@ -143,15 +156,15 @@ $$
 
 ## ✅ Final Check
 
-Multiply **L × U**, and confirm it gives back matrix **A**.  
-Want help walking through the multiplication?
+Multiply **L × U** — should reconstruct matrix **A**.  
+Would you like help with that step?
 
 ---
 
 ## 🔁 LU Decomposition Summary (for any 3×3 matrix)
 
-1. Start with \( U = A \), and \( L = I \) (identity matrix)  
-2. Eliminate below-diagonal entries in U using row operations  
+1. Start with \( U = A \), and \( L = I \) (identity matrix)
+2. Eliminate below-diagonal entries in U using row operations
 3. Store multipliers in L
 
 ---
