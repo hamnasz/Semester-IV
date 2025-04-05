@@ -49,7 +49,7 @@ $$
 
 ---
 
-### 💡 Memory Tip:
+### 🧠 Memory Tip:
 > **L** has 1s *on* the diagonal.  
 > **U** has 0s *below* the diagonal.
 
@@ -65,8 +65,8 @@ From matrix A:
 
 Now calculate:
 
-- \( l_{21} = \frac{4}{2} = 2 \)
-- \( l_{31} = \frac{6}{2} = 3 \)
+- \( l_{21} = \dfrac{4}{2} = 2 \)
+- \( l_{31} = \dfrac{6}{2} = 3 \)
 
 Updated so far:
 
@@ -106,7 +106,7 @@ $$
 
 Then:
 
-- \( l_{32} = \frac{9}{1} = 9 \)
+- \( l_{32} = \dfrac{9}{1} = 9 \)
 
 Updated:
 
