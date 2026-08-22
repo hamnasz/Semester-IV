@@ -1,0 +1,962 @@
+{
+  "githubUser": "hamnasz",
+  "githubRepo": "Semester-IV",
+  "githubBranch": "main",
+  "generatedFileCount": 106,
+  "files": [
+    {
+      "path": "Database/Finals/Lab Manual/Lab Manual.docx",
+      "subject": "Database",
+      "category": "Finals",
+      "subcategory": "Lab Manual",
+      "filename": "Lab Manual.docx",
+      "ext": "docx",
+      "size": 3448735
+    },
+    {
+      "path": "Database/Mids/CamScanner 02-14-2025 20.15n_1.jpg",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "CamScanner 02-14-2025 20.15n_1.jpg",
+      "ext": "jpg",
+      "size": 341621
+    },
+    {
+      "path": "Database/Mids/CamScanner 02-14-2025 20.15n_2.jpg",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "CamScanner 02-14-2025 20.15n_2.jpg",
+      "ext": "jpg",
+      "size": 240200
+    },
+    {
+      "path": "Database/Mids/CamScanner 02-14-2025 20.15n_3.jpg",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "CamScanner 02-14-2025 20.15n_3.jpg",
+      "ext": "jpg",
+      "size": 397550
+    },
+    {
+      "path": "Database/Mids/CamScanner 02-14-2025 20.15n_4.jpg",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "CamScanner 02-14-2025 20.15n_4.jpg",
+      "ext": "jpg",
+      "size": 294296
+    },
+    {
+      "path": "Database/Mids/WhatsApp Image 2025-02-14 at 8.21.21 PM.jpeg",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "WhatsApp Image 2025-02-14 at 8.21.21 PM.jpeg",
+      "ext": "jpeg",
+      "size": 194949
+    },
+    {
+      "path": "Database/Mids/WhatsApp Image 2025-02-14 at 8.21.22 PM.jpeg",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "WhatsApp Image 2025-02-14 at 8.21.22 PM.jpeg",
+      "ext": "jpeg",
+      "size": 229595
+    },
+    {
+      "path": "Database/Mids/Lab/Lab 4/How to create new Database and Table in MySQL WorkBench.pptx",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Lab",
+      "filename": "How to create new Database and Table in MySQL WorkBench.pptx",
+      "ext": "pptx",
+      "size": 20426536
+    },
+    {
+      "path": "Database/Mids/Lab/Lab 5/Lab 05.pdf",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Lab",
+      "filename": "Lab 05.pdf",
+      "ext": "pdf",
+      "size": 32464
+    },
+    {
+      "path": "Database/Mids/Lab/Lab 4/Lab 4.docx",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Lab",
+      "filename": "Lab 4.docx",
+      "ext": "docx",
+      "size": 15737
+    },
+    {
+      "path": "Database/Mids/Lab/Lab 5/ppt.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Lab",
+      "filename": "ppt.ppt",
+      "ext": "ppt",
+      "size": 389120
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 1.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 1.ppt",
+      "ext": "ppt",
+      "size": 380416
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 10.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 10.ppt",
+      "ext": "ppt",
+      "size": 1421824
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 11.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 11.ppt",
+      "ext": "ppt",
+      "size": 1421824
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 12.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 12.ppt",
+      "ext": "ppt",
+      "size": 536576
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 13.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 13.ppt",
+      "ext": "ppt",
+      "size": 1820160
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 14.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 14.ppt",
+      "ext": "ppt",
+      "size": 1820160
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 1a.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 1a.ppt",
+      "ext": "ppt",
+      "size": 381952
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 2.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 2.ppt",
+      "ext": "ppt",
+      "size": 609280
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 2a.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 2a.ppt",
+      "ext": "ppt",
+      "size": 608768
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 3.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 3.ppt",
+      "ext": "ppt",
+      "size": 1384448
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 4.pptx",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 4.pptx",
+      "ext": "pptx",
+      "size": 175223
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 5.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 5.ppt",
+      "ext": "ppt",
+      "size": 1315840
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 6.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 6.ppt",
+      "ext": "ppt",
+      "size": 681984
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 7.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 7.ppt",
+      "ext": "ppt",
+      "size": 681984
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 8.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 8.ppt",
+      "ext": "ppt",
+      "size": 681984
+    },
+    {
+      "path": "Database/Mids/Slides/Lecture # 9.ppt",
+      "subject": "Database",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 9.ppt",
+      "ext": "ppt",
+      "size": 1421824
+    },
+    {
+      "path": "Database/Outline/Course Outline.docx",
+      "subject": "Database",
+      "category": "Outline",
+      "subcategory": null,
+      "filename": "Course Outline.docx",
+      "ext": "docx",
+      "size": 51599
+    },
+    {
+      "path": "Entrepreneurship/Mids/Slides/Ch 2 The Entrepreneurial Process.pdf",
+      "subject": "Entrepreneurship",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Ch 2 The Entrepreneurial Process.pdf",
+      "ext": "pdf",
+      "size": 1539808
+    },
+    {
+      "path": "Entrepreneurship/Mids/Slides/Marketing mix.pptx",
+      "subject": "Entrepreneurship",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Marketing mix.pptx",
+      "ext": "pptx",
+      "size": 2003306
+    },
+    {
+      "path": "Entrepreneurship/Mids/Slides/STP.pptx",
+      "subject": "Entrepreneurship",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "STP.pptx",
+      "ext": "pptx",
+      "size": 3844357
+    },
+    {
+      "path": "Entrepreneurship/Mids/Slides/business model canvas.pptx",
+      "subject": "Entrepreneurship",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "business model canvas.pptx",
+      "ext": "pptx",
+      "size": 967614
+    },
+    {
+      "path": "Entrepreneurship/Mids/Slides/chapter 4.ppt",
+      "subject": "Entrepreneurship",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "chapter 4.ppt",
+      "ext": "ppt",
+      "size": 595456
+    },
+    {
+      "path": "Entrepreneurship/Outline/Course Outline.docx",
+      "subject": "Entrepreneurship",
+      "category": "Outline",
+      "subcategory": null,
+      "filename": "Course Outline.docx",
+      "ext": "docx",
+      "size": 26616
+    },
+    {
+      "path": "Linear Algebra/Mids/Assignment/excersice 4.1 q 1-7.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Assignment",
+      "filename": "excersice 4.1 q 1-7.pdf",
+      "ext": "pdf",
+      "size": 900648
+    },
+    {
+      "path": "Linear Algebra/Mids/Assignment/excersice 4.1 q 12-19.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Assignment",
+      "filename": "excersice 4.1 q 12-19.pdf",
+      "ext": "pdf",
+      "size": 1035643
+    },
+    {
+      "path": "Linear Algebra/Mids/Assignment/excersice 4.1 q 8.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Assignment",
+      "filename": "excersice 4.1 q 8.pdf",
+      "ext": "pdf",
+      "size": 191747
+    },
+    {
+      "path": "Linear Algebra/Mids/Digital Notes/4.1.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Digital Notes",
+      "filename": "4.1.pdf",
+      "ext": "pdf",
+      "size": 245769
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/3.1.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "3.1.pdf",
+      "ext": "pdf",
+      "size": 645138
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/3.2.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "3.2.pdf",
+      "ext": "pdf",
+      "size": 799766
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/4.1.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "4.1.pdf",
+      "ext": "pdf",
+      "size": 1038368
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/5.1.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "5.1.pdf",
+      "ext": "pdf",
+      "size": 1332269
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/5.2.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "5.2.pdf",
+      "ext": "pdf",
+      "size": 405165
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/6.1.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "6.1.pdf",
+      "ext": "pdf",
+      "size": 3687883
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/6.2.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "6.2.pdf",
+      "ext": "pdf",
+      "size": 1285474
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/6.3.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "6.3.pdf",
+      "ext": "pdf",
+      "size": 882337
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/6.4.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "6.4.pdf",
+      "ext": "pdf",
+      "size": 170253
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/7.1.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "7.1.pdf",
+      "ext": "pdf",
+      "size": 522343
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/7.1B.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "7.1B.pdf",
+      "ext": "pdf",
+      "size": 372079
+    },
+    {
+      "path": "Linear Algebra/Mids/Ex/Mathematical Methods.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Ex",
+      "filename": "Mathematical Methods.pdf",
+      "ext": "pdf",
+      "size": 41508269
+    },
+    {
+      "path": "Linear Algebra/Mids/Notes/Complete Notes.pdf",
+      "subject": "Linear Algebra",
+      "category": "Mids",
+      "subcategory": "Notes",
+      "filename": "Complete Notes.pdf",
+      "ext": "pdf",
+      "size": 19804854
+    },
+    {
+      "path": "Linear Algebra/Outlines/Course Outline.docx",
+      "subject": "Linear Algebra",
+      "category": "Outlines",
+      "subcategory": null,
+      "filename": "Course Outline.docx",
+      "ext": "docx",
+      "size": 47680
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (1).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (1).pptx",
+      "ext": "pptx",
+      "size": 14225528
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (10).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (10).pptx",
+      "ext": "pptx",
+      "size": 7302942
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (11).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (11).pptx",
+      "ext": "pptx",
+      "size": 8161920
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (2).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (2).pptx",
+      "ext": "pptx",
+      "size": 39898
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (3).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (3).pptx",
+      "ext": "pptx",
+      "size": 10149320
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (4).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (4).pptx",
+      "ext": "pptx",
+      "size": 4600037
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (5).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (5).pptx",
+      "ext": "pptx",
+      "size": 10277645
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (6).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (6).pptx",
+      "ext": "pptx",
+      "size": 12015610
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (7).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (7).pptx",
+      "ext": "pptx",
+      "size": 9078320
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (8).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (8).pptx",
+      "ext": "pptx",
+      "size": 4658093
+    },
+    {
+      "path": "Machine Learning/Mids/pptx (9).pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx (9).pptx",
+      "ext": "pptx",
+      "size": 11315876
+    },
+    {
+      "path": "Machine Learning/Mids/pptx.pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": null,
+      "filename": "pptx.pptx",
+      "ext": "pptx",
+      "size": 17508037
+    },
+    {
+      "path": "Machine Learning/Mids/Assignment/Assignment No 1.docx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Assignment",
+      "filename": "Assignment No 1.docx",
+      "ext": "docx",
+      "size": 34192
+    },
+    {
+      "path": "Machine Learning/Mids/Assignment/Detailed Explanation of Machine Learning Paradigms.pdf",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Assignment",
+      "filename": "Detailed Explanation of Machine Learning Paradigms.pdf",
+      "ext": "pdf",
+      "size": 4001904
+    },
+    {
+      "path": "Machine Learning/Mids/Lab/Lab 2/titanic.csv.csv",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Lab",
+      "filename": "titanic.csv.csv",
+      "ext": "csv",
+      "size": 29474
+    },
+    {
+      "path": "Machine Learning/Mids/Slides/Lecture # 1.pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 1.pptx",
+      "ext": "pptx",
+      "size": 22975425
+    },
+    {
+      "path": "Machine Learning/Mids/Slides/Lecture # 2.pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 2.pptx",
+      "ext": "pptx",
+      "size": 17508037
+    },
+    {
+      "path": "Machine Learning/Mids/Slides/Lecture # 3.pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 3.pptx",
+      "ext": "pptx",
+      "size": 14225528
+    },
+    {
+      "path": "Machine Learning/Mids/Slides/Lecture # 4.pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 4.pptx",
+      "ext": "pptx",
+      "size": 10149320
+    },
+    {
+      "path": "Machine Learning/Mids/Slides/Lecture # 5.pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 5.pptx",
+      "ext": "pptx",
+      "size": 4651565
+    },
+    {
+      "path": "Machine Learning/Mids/Slides/Lecture # 6.pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 6.pptx",
+      "ext": "pptx",
+      "size": 10277645
+    },
+    {
+      "path": "Machine Learning/Mids/Slides/Lecture # 7.pptx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 7.pptx",
+      "ext": "pptx",
+      "size": 12015610
+    },
+    {
+      "path": "Machine Learning/Mids/Slides/Machine Learning course Outline.docx",
+      "subject": "Machine Learning",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Machine Learning course Outline.docx",
+      "ext": "docx",
+      "size": 50701
+    },
+    {
+      "path": "Machine Learning/Outline/Course Outline.docx",
+      "subject": "Machine Learning",
+      "category": "Outline",
+      "subcategory": null,
+      "filename": "Course Outline.docx",
+      "ext": "docx",
+      "size": 50701
+    },
+    {
+      "path": "Operating System/Mids/Lab/Lab 4/Document.docx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Lab",
+      "filename": "Document.docx",
+      "ext": "docx",
+      "size": 3
+    },
+    {
+      "path": "Operating System/Mids/Lab/Lab 4/Notes.txt",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Lab",
+      "filename": "Notes.txt",
+      "ext": "txt",
+      "size": 30
+    },
+    {
+      "path": "Operating System/Mids/Lab/Lab 4/Presentation.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Lab",
+      "filename": "Presentation.pptx",
+      "ext": "pptx",
+      "size": 3
+    },
+    {
+      "path": "Operating System/Mids/Lab Manual/2023-BS-AI-017.docx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Lab Manual",
+      "filename": "2023-BS-AI-017.docx",
+      "ext": "docx",
+      "size": 1120344
+    },
+    {
+      "path": "Operating System/Mids/Lab Manual/LAB5 os.docx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Lab Manual",
+      "filename": "LAB5 os.docx",
+      "ext": "docx",
+      "size": 82688
+    },
+    {
+      "path": "Operating System/Mids/Lab Manual/Lab Manual.docx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Lab Manual",
+      "filename": "Lab Manual.docx",
+      "ext": "docx",
+      "size": 774634
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 1.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 1.pptx",
+      "ext": "pptx",
+      "size": 868547
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 10.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 10.pptx",
+      "ext": "pptx",
+      "size": 683948
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 11.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 11.pptx",
+      "ext": "pptx",
+      "size": 754646
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 12.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 12.pptx",
+      "ext": "pptx",
+      "size": 950854
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 2.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 2.pptx",
+      "ext": "pptx",
+      "size": 708370
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 3.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 3.pptx",
+      "ext": "pptx",
+      "size": 708370
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 4.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 4.pptx",
+      "ext": "pptx",
+      "size": 596650
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 5.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 5.pptx",
+      "ext": "pptx",
+      "size": 231087
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 6.docx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 6.docx",
+      "ext": "docx",
+      "size": 74806
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 6.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 6.pptx",
+      "ext": "pptx",
+      "size": 186608
+    },
+    {
+      "path": "Operating System/Mids/Slides/Lecture # 9.pptx",
+      "subject": "Operating System",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 9.pptx",
+      "ext": "pptx",
+      "size": 273398
+    },
+    {
+      "path": "Operating System/Outline/Course Outline.pdf",
+      "subject": "Operating System",
+      "category": "Outline",
+      "subcategory": null,
+      "filename": "Course Outline.pdf",
+      "ext": "pdf",
+      "size": 108133
+    },
+    {
+      "path": "Others/AI GROUP A.pdf",
+      "subject": "Others",
+      "category": "General",
+      "subcategory": null,
+      "filename": "AI GROUP A.pdf",
+      "ext": "pdf",
+      "size": 181656
+    },
+    {
+      "path": "Others/Liang Wenfeng - Founder of DeepSeek.pptx",
+      "subject": "Others",
+      "category": "General",
+      "subcategory": null,
+      "filename": "Liang Wenfeng - Founder of DeepSeek.pptx",
+      "ext": "pptx",
+      "size": 1022452
+    },
+    {
+      "path": "Others/SRE outline.docx",
+      "subject": "Others",
+      "category": "General",
+      "subcategory": null,
+      "filename": "SRE outline.docx",
+      "ext": "docx",
+      "size": 64035
+    },
+    {
+      "path": "Psychology/Mids/Slides/Lecture # 1.pdf",
+      "subject": "Psychology",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 1.pdf",
+      "ext": "pdf",
+      "size": 244987
+    },
+    {
+      "path": "Psychology/Mids/Slides/Lecture # 2.pptx",
+      "subject": "Psychology",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 2.pptx",
+      "ext": "pptx",
+      "size": 335537
+    },
+    {
+      "path": "Psychology/Mids/Slides/Lecture # 3.pdf",
+      "subject": "Psychology",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 3.pdf",
+      "ext": "pdf",
+      "size": 168279
+    },
+    {
+      "path": "Psychology/Mids/Slides/Lecture # 4.pptx",
+      "subject": "Psychology",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 4.pptx",
+      "ext": "pptx",
+      "size": 6896706
+    },
+    {
+      "path": "Psychology/Mids/Slides/Lecture # 5.pptx",
+      "subject": "Psychology",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 5.pptx",
+      "ext": "pptx",
+      "size": 1276267
+    },
+    {
+      "path": "Psychology/Mids/Slides/Lecture # 6.pptx",
+      "subject": "Psychology",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 6.pptx",
+      "ext": "pptx",
+      "size": 992094
+    },
+    {
+      "path": "Psychology/Mids/Slides/Lecture # 7.pptx",
+      "subject": "Psychology",
+      "category": "Mids",
+      "subcategory": "Slides",
+      "filename": "Lecture # 7.pptx",
+      "ext": "pptx",
+      "size": 103160
+    },
+    {
+      "path": "Psychology/Outline/Course Outline.docx",
+      "subject": "Psychology",
+      "category": "Outline",
+      "subcategory": null,
+      "filename": "Course Outline.docx",
+      "ext": "docx",
+      "size": 47437
+    },
+    {
+      "path": "Teaching of Holy Quran/THQ IV outline.docx",
+      "subject": "Teaching of Holy Quran",
+      "category": "General",
+      "subcategory": null,
+      "filename": "THQ IV outline.docx",
+      "ext": "docx",
+      "size": 47607
+    }
+  ]
+}
