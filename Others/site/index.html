@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semester IV — A Field Journal</title>
+<meta name="description" content="A field journal through Semester IV: Database, Linear Algebra, Machine Learning, Operating Systems, Psychology and Entrepreneurship — every lecture, lab and note, browsable and downloadable.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section id="cover" class="cover">
+  <div class="cover__texture"></div>
+  <div class="cover__spine"></div>
+  <div class="cover__ribbon" aria-hidden="true"></div>
+  <div class="cover__stamp" aria-hidden="true">2023&ndash;BS&ndash;AI&ndash;017</div>
+
+  <div class="cover__content">
+    <p class="cover__eyebrow">a field journal kept by</p>
+    <h1 class="cover__title">Semester&nbsp;IV</h1>
+    <p class="cover__subtitle">Database &middot; Linear Algebra &middot; Machine Learning<br>
+    Operating Systems &middot; Psychology &middot; Entrepreneurship</p>
+    <button id="openJournal" class="cover__open">
+      <span>Open the Journal</span>
+      <svg width="22" height="14" viewBox="0 0 22 14" fill="none"><path d="M1 7H21M21 7L15 1M21 7L15 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="cover__source">every lecture, lab and note from<br><a href="https://github.com/hamnasz/Semester-IV" target="_blank" rel="noopener">github.com/hamnasz/Semester-IV</a></p>
+  </div>
+</section>
+
+<!-- ============ JOURNAL (main app) ============ -->
+<div id="journal" class="journal" hidden>
+
+  <header class="journal__masthead">
+    <button id="toCover" class="masthead__back" title="Back to cover" aria-label="Back to cover">&#8617;</button>
+    <div class="masthead__title">
+      <span class="masthead__hand">Semester IV</span>
+      <span class="masthead__meta">field journal &middot; <span id="fileCount">106</span> entries</span>
+    </div>
+    <div class="masthead__search">
+      <input id="searchInput" type="text" placeholder="search the index&hellip;" autocomplete="off">
+      <div id="searchResults" class="search-results" hidden></div>
+    </div>
+  </header>
+
+  <div class="journal__body">
+    <!-- Binder tabs -->
+    <nav id="tabs" class="tabs" aria-label="Subjects"></nav>
+
+    <!-- Open double-page spread -->
+    <main class="spread">
+      <div class="spread__page spread__page--left">
+        <div class="page-curl page-curl--left" aria-hidden="true"></div>
+        <div id="tocPage" class="page-inner"></div>
+      </div>
+      <div class="spread__fold" aria-hidden="true"></div>
+      <div class="spread__page spread__page--right">
+        <div class="page-curl page-curl--right" aria-hidden="true"></div>
+        <div id="entriesPage" class="page-inner"></div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="journal__footer">
+    <span>kept with care by Humna &middot; BS Artificial Intelligence, 2023&ndash;2027</span>
+  </footer>
+</div>
+
+<!-- ============ VIEWER OVERLAY ============ -->
+<div id="viewer" class="viewer" hidden>
+  <div class="viewer__backdrop" id="viewerBackdrop"></div>
+  <div class="viewer__page">
+    <div class="viewer__bar">
+      <button id="viewerClose" class="viewer__tab viewer__tab--close">&larr; back to journal</button>
+      <div class="viewer__title">
+        <span id="viewerFilename">&nbsp;</span>
+        <span id="viewerMeta" class="viewer__submeta"></span>
+      </div>
+      <button id="viewerDownload" class="viewer__tab viewer__tab--download">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V16M12 16L7 11M12 16L17 11M5 21H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        download
+      </button>
+    </div>
+    <div id="viewerContent" class="viewer__content">
+      <div class="viewer__loading">
+        <div class="ink-spinner"></div>
+        <p>turning to the page&hellip;</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mammoth/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse/papaparse.min.js"></script>
+<script src="js/subjects.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
