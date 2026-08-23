@@ -1,386 +1,474 @@
-(function(){
-  "use strict";
+/* =========================================================================
+   app.js — boots the journal, fetches the live tree once, then handles
+   all navigation, search, filtering, and the file-viewer overlay purely
+   client-side against that in-memory data.
+   ========================================================================= */
 
-  let MANIFEST = null;
-  let FILES = [];
-  let SUBJECTS = []; // ordered list of subject names present in the data
+(() => {
+  const state = {
+    tree: null,        // flat [{path, type, size}] straight from the GitHub API
+    meta: null,        // repo metadata (description, pushed_at, ...)
+    loadError: null,
+    currentPath: '',    // '' = archive root
+    searchQuery: '',
+    activeFilter: null, // one of Viewers filter-group labels, or null for "all"
+  };
 
-  const state = { subject: null, category: null, subcategory: null };
+  const el = (id) => document.getElementById(id);
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  // ---------- helpers ----------
-  function rawUrl(path){
-    const p = path.split('/').map(encodeURIComponent).join('/');
-    return `https://raw.githubusercontent.com/${MANIFEST.githubUser}/${MANIFEST.githubRepo}/${MANIFEST.githubBranch}/${p}`;
+  /* ---------------------------------------------------------------- helpers on the tree */
+
+  function parentOf(path) {
+    const i = path.lastIndexOf('/');
+    return i === -1 ? '' : path.slice(0, i);
   }
-  function blobUrl(path){
-    const p = path.split('/').map(encodeURIComponent).join('/');
-    return `https://github.com/${MANIFEST.githubUser}/${MANIFEST.githubRepo}/blob/${MANIFEST.githubBranch}/${p}`;
+  function baseName(path) {
+    return path.slice(path.lastIndexOf('/') + 1);
   }
-  function titleFromFilename(fn){
-    return fn.replace(/\.[^/.]+$/, "").trim();
+  function getChildren(folderPath) {
+    if (!state.tree) return { folders: [], files: [] };
+    const folders = [];
+    const files = [];
+    for (const item of state.tree) {
+      if (item.path === folderPath) continue;
+      if (parentOf(item.path) !== folderPath) continue;
+      if (item.type === 'tree') folders.push(item);
+      else files.push(item);
+    }
+    folders.sort((a, b) => baseName(a.path).localeCompare(baseName(b.path)));
+    files.sort((a, b) => baseName(a.path).localeCompare(baseName(b.path)));
+    return { folders, files };
   }
-  function formatSize(bytes){
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024*1024) return (bytes/1024).toFixed(0) + " KB";
-    return (bytes/(1024*1024)).toFixed(1) + " MB";
+  function topLevelSubjects() {
+    if (!state.tree) return [];
+    return state.tree
+      .filter((i) => i.type === 'tree' && parentOf(i.path) === '')
+      .sort((a, b) => a.path.localeCompare(b.path));
   }
-  function sortByOrder(list, order){
-    return list.slice().sort((a,b)=>{
-      const ia = order.indexOf(a), ib = order.indexOf(b);
-      const ra = ia === -1 ? 999 : ia, rb = ib === -1 ? 999 : ib;
-      if (ra !== rb) return ra - rb;
-      return a.localeCompare(b);
+  function descendantFileCount(folderPath) {
+    return state.tree.filter((i) => i.type === 'blob' && (i.path === folderPath || i.path.startsWith(folderPath + '/'))).length;
+  }
+  function fileByPath(path) {
+    return state.tree.find((i) => i.type === 'blob' && i.path === path) || null;
+  }
+
+  function humanizeDate(iso) {
+    if (!iso) return null;
+    const then = new Date(iso);
+    const diffMs = Date.now() - then.getTime();
+    const days = Math.floor(diffMs / 86400000);
+    if (days <= 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 30) return `${days} days ago`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months} month${months > 1 ? 's' : ''} ago`;
+    const years = Math.floor(months / 12);
+    return `${years} year${years > 1 ? 's' : ''} ago`;
+  }
+
+  /* ---------------------------------------------------------------- routing */
+
+  function currentRoute() {
+    const hash = location.hash.replace(/^#/, '') || '/';
+    if (hash === '/' || hash === '') return { view: 'cover' };
+    const fileMatch = hash.match(/^\/file\/(.+)$/);
+    if (fileMatch) return { view: 'file', path: decodeURIComponent(fileMatch[1]) };
+    const browseMatch = hash.match(/^\/browse\/?(.*)$/);
+    if (browseMatch) return { view: 'browse', path: decodeURIComponent(browseMatch[1] || '') };
+    return { view: 'cover' };
+  }
+
+  function goTo(hash) {
+    location.hash = hash;
+  }
+  function navigateFolder(path) {
+    goTo(`/browse/${path.split('/').map(encodeURIComponent).join('/')}`);
+  }
+  function navigateFile(path) {
+    goTo(`/file/${path.split('/').map(encodeURIComponent).join('/')}`);
+  }
+
+  function handleRoute() {
+    const route = currentRoute();
+    if (route.view === 'cover') {
+      showView('cover');
+      return;
+    }
+    showView('archive');
+    closeViewer();
+    if (route.view === 'file') {
+      const file = state.tree && fileByPath(route.path);
+      state.currentPath = parentOf(route.path);
+      renderArchiveChrome();
+      if (file) openViewer(file);
+      else if (state.tree) navigateFolder(state.currentPath); // stale link, just fall back to the folder
+      return;
+    }
+    // browse
+    state.currentPath = route.path;
+    state.searchQuery = '';
+    el('search-input').value = '';
+    el('search-clear').hidden = true;
+    renderArchiveChrome();
+  }
+
+  function showView(name) {
+    el('view-cover').hidden = name !== 'cover';
+    el('view-archive').hidden = name !== 'archive';
+  }
+
+  /* ---------------------------------------------------------------- boot */
+
+  async function boot() {
+    window.addEventListener('hashchange', handleRoute);
+    wireStaticUI();
+    handleRoute(); // show correct shell immediately, data fills in as it arrives
+
+    const [meta, treeResult] = await Promise.allSettled([
+      GitHubAPI.fetchRepoMeta(),
+      GitHubAPI.fetchTree(),
+    ]);
+
+    if (meta.status === 'fulfilled') state.meta = meta.value;
+
+    if (treeResult.status === 'fulfilled') {
+      state.tree = treeResult.value;
+      state.loadError = null;
+    } else {
+      state.loadError = treeResult.reason;
+    }
+
+    renderCover();
+    handleRoute(); // re-run now that data has arrived, so a deep-linked file/folder route resolves correctly
+  }
+
+  function retryLoad() {
+    state.loadError = null;
+    renderLoadingState();
+    boot();
+  }
+
+  /* ---------------------------------------------------------------- cover */
+
+  function renderCover() {
+    const metaEl = el('cover-meta');
+    const tocEl = el('toc-list');
+
+    if (state.loadError && !state.tree) {
+      metaEl.innerHTML = `<div class="meta-chip">the archive is warming up — open the journal to retry</div>`;
+      tocEl.innerHTML = `<li class="toc-skel" style="color:var(--ink-faint); font-size:14px; padding:13px 6px;">Table of contents will appear once the archive loads.</li>`;
+      return;
+    }
+    if (!state.tree) return; // still loading, keep skeletons
+
+    const fileCount = state.tree.filter((i) => i.type === 'blob').length;
+    const subjects = topLevelSubjects();
+    const chips = [
+      `<div class="meta-chip"><b>${fileCount}</b> files archived</div>`,
+      `<div class="meta-chip"><b>${subjects.length}</b> subjects</div>`,
+    ];
+    if (state.meta && state.meta.pushed_at) {
+      chips.push(`<div class="meta-chip">last entry <b>${humanizeDate(state.meta.pushed_at)}</b></div>`);
+    }
+    metaEl.innerHTML = chips.join('');
+
+    tocEl.innerHTML = subjects.map((s, idx) => {
+      const count = descendantFileCount(s.path);
+      const num = String(idx + 1).padStart(2, '0');
+      return `<li><button class="toc-item" data-subject="${encodeURIComponent(s.path)}">
+        <span class="toc-num">${num}</span>
+        <span class="toc-name">${escapeHtml(baseName(s.path))}</span>
+        <span class="toc-count">${count} file${count === 1 ? '' : 's'}</span>
+      </button></li>`;
+    }).join('') || `<li style="color:var(--ink-faint); padding:13px 6px;">No subjects found at the repository root.</li>`;
+
+    qsa('.toc-item', tocEl).forEach((btn) => {
+      btn.addEventListener('click', () => navigateFolder(decodeURIComponent(btn.dataset.subject)));
     });
   }
-  function subjectMeta(name){
-    return SUBJECT_META[name] || { short: name.slice(0,3).toUpperCase(), color:"#555", accent:"#eee", note:"" };
-  }
-  function el(tag, cls, html){
-    const e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (html !== undefined) e.innerHTML = html;
-    return e;
-  }
 
-  // ---------- boot ----------
-  async function init(){
-    const res = await fetch('js/manifest.json');
-    MANIFEST = await res.json();
-    FILES = MANIFEST.files;
-    document.getElementById('fileCount').textContent = FILES.length;
+  /* ---------------------------------------------------------------- archive chrome (rail + breadcrumb + grid) */
 
-    // preserve a sensible subject order: known subjects first (SUBJECT_META order), then any extras
-    const present = Array.from(new Set(FILES.map(f => f.subject)));
-    const known = Object.keys(SUBJECT_META).filter(s => present.includes(s));
-    const extra = present.filter(s => !known.includes(s));
-    SUBJECTS = known.concat(extra);
+  function renderArchiveChrome() {
+    if (state.loadError && !state.tree) { showState('error'); renderErrorDetails(); return; }
+    if (!state.tree) { showState('loading'); return; }
 
-    renderTabs();
-    selectSubject(SUBJECTS[0]);
-
-    document.getElementById('openJournal').addEventListener('click', () => {
-      document.getElementById('cover').hidden = true;
-      document.getElementById('journal').hidden = false;
-    });
-    document.getElementById('toCover').addEventListener('click', () => {
-      document.getElementById('journal').hidden = true;
-      document.getElementById('cover').hidden = false;
-    });
-
-    setupSearch();
-    setupViewer();
+    renderChapterRail();
+    renderBreadcrumb();
+    renderGrid();
   }
 
-  // ---------- tabs ----------
-  function renderTabs(){
-    const nav = document.getElementById('tabs');
-    nav.innerHTML = '';
-    SUBJECTS.forEach(subj => {
-      const meta = subjectMeta(subj);
-      const btn = el('button', 'tab');
-      btn.style.background = meta.color;
-      btn.dataset.subject = subj;
-      btn.innerHTML = `<span>${meta.short} &middot; ${subj}</span>`;
-      btn.addEventListener('click', () => selectSubject(subj));
-      nav.appendChild(btn);
+  function renderChapterRail() {
+    const rail = el('chapter-rail-inner');
+    const subjects = topLevelSubjects();
+    rail.innerHTML = subjects.map((s) => {
+      const isActive = state.currentPath === s.path || state.currentPath.startsWith(s.path + '/');
+      const color = Viewers.hashColor(s.path);
+      return `<button class="chapter-tab ${isActive ? 'active' : ''}" data-path="${encodeURIComponent(s.path)}">
+        <span class="tab-dot" style="background:${color}"></span>${escapeHtml(baseName(s.path))}
+      </button>`;
+    }).join('');
+    qsa('.chapter-tab', rail).forEach((btn) => {
+      btn.addEventListener('click', () => navigateFolder(decodeURIComponent(btn.dataset.path)));
     });
   }
 
-  function selectSubject(subject){
-    state.subject = subject;
-    state.category = null;
-    state.subcategory = null;
-    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('is-active', t.dataset.subject === subject));
-    renderTOC();
-  }
-
-  // ---------- table of contents (left page) ----------
-  function filesForSubject(subject){
-    return FILES.filter(f => f.subject === subject);
-  }
-
-  function renderTOC(){
-    const wrap = document.getElementById('tocPage');
-    wrap.className = 'page-inner grain';
-    const subject = state.subject;
-    const meta = subjectMeta(subject);
-    const files = filesForSubject(subject);
-
-    const categories = Array.from(new Set(files.map(f => f.category)));
-    const orderedCats = sortByOrder(categories, CATEGORY_ORDER);
-
-    if (!state.category) state.category = orderedCats[0];
-
-    let html = `<h2 class="toc-heading">${subject}</h2><p class="toc-note">${meta.note}</p>`;
-    wrap.innerHTML = html;
-
-    orderedCats.forEach(cat => {
-      const catFiles = files.filter(f => f.category === cat);
-      const catBtn = el('button', 'toc-cat' + (cat === state.category ? ' is-active' : ''));
-      catBtn.innerHTML = `<span class="toc-cat__label">${cat}</span><span class="toc-cat__leader"></span><span class="toc-cat__count">${catFiles.length}</span>`;
-      catBtn.addEventListener('click', () => {
-        state.category = cat;
-        state.subcategory = null;
-        renderTOC();
-        renderEntries();
+  function renderBreadcrumb() {
+    const strip = el('breadcrumb-strip');
+    if (state.searchQuery) {
+      strip.innerHTML = `<button class="crumb" data-path="">Home</button><span class="crumb-sep">›</span><span class="crumb current">Search: “${escapeHtml(state.searchQuery)}”</span>`;
+    } else {
+      const segments = state.currentPath ? state.currentPath.split('/') : [];
+      let acc = '';
+      let html = `<button class="crumb ${segments.length === 0 ? 'current' : ''}" data-path="">Home</button>`;
+      segments.forEach((seg, idx) => {
+        acc = acc ? `${acc}/${seg}` : seg;
+        const isLast = idx === segments.length - 1;
+        html += `<span class="crumb-sep">›</span>`;
+        html += isLast
+          ? `<span class="crumb current">${escapeHtml(seg)}</span>`
+          : `<button class="crumb" data-path="${encodeURIComponent(acc)}">${escapeHtml(seg)}</button>`;
       });
-      wrap.appendChild(catBtn);
-
-      if (cat === state.category){
-        const subs = Array.from(new Set(catFiles.filter(f => f.subcategory).map(f => f.subcategory)));
-        const orderedSubs = sortByOrder(subs, SUBCATEGORY_ORDER);
-        orderedSubs.forEach(sub => {
-          const subBtn = el('button', 'toc-sub' + (sub === state.subcategory ? ' is-active' : ''));
-          const count = catFiles.filter(f => f.subcategory === sub).length;
-          subBtn.textContent = `${sub} (${count})`;
-          subBtn.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            state.subcategory = (state.subcategory === sub) ? null : sub;
-            renderTOC();
-            renderEntries();
-          });
-          wrap.appendChild(subBtn);
-        });
-      }
+      strip.innerHTML = html;
+    }
+    qsa('.crumb[data-path]', strip).forEach((btn) => {
+      btn.addEventListener('click', () => navigateFolder(decodeURIComponent(btn.dataset.path)));
     });
-
-    renderEntries();
   }
 
-  // ---------- entries (right page) ----------
-  function renderEntries(){
-    const wrap = document.getElementById('entriesPage');
-    wrap.className = 'page-inner grain';
-    const subject = state.subject, category = state.category;
-    let files = filesForSubject(subject).filter(f => f.category === category);
-    if (state.subcategory) files = files.filter(f => f.subcategory === state.subcategory);
+  function renderGrid() {
+    const grid = el('card-grid');
 
-    wrap.innerHTML = `<div class="entries-heading"><h2>${category}</h2><span class="entries-count">${files.length} ${files.length===1?'entry':'entries'}</span></div>`;
+    if (state.searchQuery) {
+      const q = state.searchQuery.toLowerCase();
+      let matches = state.tree.filter((i) => i.type === 'blob' && baseName(i.path).toLowerCase().includes(q));
+      if (state.activeFilter) matches = matches.filter((i) => Viewers.filterGroup(i.path) === state.activeFilter);
+      matches.sort((a, b) => a.path.localeCompare(b.path));
 
-    if (!files.length){
-      wrap.appendChild(el('p', 'entries-empty', 'No pages filed here yet.'));
+      if (!matches.length) {
+        showState('no-results');
+        el('no-results-desc').textContent = `Nothing named “${state.searchQuery}” turned up${state.activeFilter ? ` in ${state.activeFilter}` : ''}.`;
+        return;
+      }
+      showState('grid');
+      grid.innerHTML = matches.map((f) => fileCardHtml(f, true)).join('');
+      wireGridCards(grid);
       return;
     }
 
-    // group: loose files (no subcategory) first, then by subcategory
-    const groups = {};
-    files.forEach(f => {
-      const key = f.subcategory || '__loose__';
-      (groups[key] = groups[key] || []).push(f);
-    });
-    const groupKeys = Object.keys(groups);
-    const orderedKeys = sortByOrder(groupKeys.filter(k=>k!=='__loose__'), SUBCATEGORY_ORDER);
-    if (groups['__loose__']) orderedKeys.unshift('__loose__');
+    const { folders, files } = getChildren(state.currentPath);
+    const filteredFiles = state.activeFilter ? files.filter((f) => Viewers.filterGroup(f.path) === state.activeFilter) : files;
 
-    orderedKeys.forEach(key => {
-      if (key !== '__loose__' && !state.subcategory) {
-        wrap.appendChild(el('div', 'entries-group-title', key));
-      } else if (key === '__loose__' && groupKeys.length > 1 && !state.subcategory) {
-        wrap.appendChild(el('div', 'entries-group-title', 'general'));
-      }
-      groups[key].forEach(f => wrap.appendChild(renderEntryRow(f)));
-    });
-  }
-
-  function renderEntryRow(f){
-    const meta = subjectMeta(f.subject);
-    const row = el('div', 'entry');
-    const badge = el('div', 'entry__badge', f.ext.toUpperCase().slice(0,4));
-    badge.style.background = meta.color;
-    row.appendChild(badge);
-
-    const main = el('div', 'entry__main');
-    main.appendChild(el('div', 'entry__title', titleFromFilename(f.filename)));
-    main.appendChild(el('div', 'entry__meta', `${formatSize(f.size)}`));
-    row.appendChild(main);
-
-    const actions = el('div', 'entry__actions');
-    const viewBtn = el('button', 'entry-btn entry-btn--view', 'view');
-    viewBtn.addEventListener('click', () => openViewer(f));
-    const dlBtn = el('button', 'entry-btn entry-btn--dl', 'download');
-    dlBtn.addEventListener('click', (ev) => { ev.stopPropagation(); triggerDownload(f, dlBtn); });
-    actions.appendChild(viewBtn);
-    actions.appendChild(dlBtn);
-    row.appendChild(actions);
-
-    return row;
-  }
-
-  // ---------- search ----------
-  function setupSearch(){
-    const input = document.getElementById('searchInput');
-    const results = document.getElementById('searchResults');
-    let timer = null;
-
-    input.addEventListener('input', () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => runSearch(input.value.trim()), 120);
-    });
-    input.addEventListener('focus', () => { if (input.value.trim()) results.hidden = false; });
-    document.addEventListener('click', (ev) => {
-      if (!ev.target.closest('.masthead__search')) results.hidden = true;
-    });
-
-    function runSearch(q){
-      if (!q){ results.hidden = true; return; }
-      const ql = q.toLowerCase();
-      const matches = FILES.filter(f =>
-        f.filename.toLowerCase().includes(ql) ||
-        f.subject.toLowerCase().includes(ql) ||
-        (f.subcategory||'').toLowerCase().includes(ql) ||
-        f.category.toLowerCase().includes(ql)
-      ).slice(0, 24);
-
-      results.innerHTML = '';
-      results.hidden = false;
-      if (!matches.length){
-        results.appendChild(el('div', 'search-empty', `no pages match "${q}"`));
-        return;
-      }
-      matches.forEach(f => {
-        const meta = subjectMeta(f.subject);
-        const row = el('button', 'search-row');
-        row.innerHTML = `<span class="search-row__dot" style="background:${meta.color}"></span>
-          <span class="search-row__title">${titleFromFilename(f.filename)}</span>
-          <span class="search-row__subject">${f.subject}</span>`;
-        row.addEventListener('click', () => {
-          results.hidden = true;
-          input.value = '';
-          state.subject = f.subject; state.category = f.category; state.subcategory = f.subcategory;
-          document.querySelectorAll('.tab').forEach(t => t.classList.toggle('is-active', t.dataset.subject === f.subject));
-          renderTOC();
-          openViewer(f);
-        });
-        results.appendChild(row);
-      });
+    if (!folders.length && !filteredFiles.length) {
+      showState('empty');
+      return;
     }
+    showState('grid');
+    grid.innerHTML =
+      folders.map((f) => folderCardHtml(f)).join('') +
+      filteredFiles.map((f) => fileCardHtml(f, false)).join('');
+    wireGridCards(grid);
   }
 
-  // ---------- download ----------
-  async function triggerDownload(f, btnEl){
-    const original = btnEl ? btnEl.textContent : null;
-    if (btnEl){ btnEl.textContent = 'fetching…'; btnEl.disabled = true; }
-    try{
-      const res = await fetch(rawUrl(f.path));
-      if (!res.ok) throw new Error('network');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = f.filename;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 15000);
-    }catch(e){
-      window.open(rawUrl(f.path), '_blank');
-    }finally{
-      if (btnEl){ btnEl.textContent = original; btnEl.disabled = false; }
-    }
+  function folderCardHtml(item) {
+    const count = descendantFileCount(item.path);
+    const tilt = ((hashInt(item.path) % 5) - 2) * 0.4;
+    return `<button class="item-card folder-card" style="--tilt:${tilt}deg" data-folder="${encodeURIComponent(item.path)}">
+      <span class="folder-icon">🗂️</span>
+      <span class="folder-name">${escapeHtml(baseName(item.path))}</span>
+      <span class="folder-count">${count} file${count === 1 ? '' : 's'}</span>
+    </button>`;
   }
 
-  // ---------- viewer ----------
-  function setupViewer(){
-    document.getElementById('viewerClose').addEventListener('click', closeViewer);
-    document.getElementById('viewerBackdrop').addEventListener('click', closeViewer);
-    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeViewer(); });
-  }
-
-  function closeViewer(){
-    document.getElementById('viewer').hidden = true;
-    document.getElementById('viewerContent').innerHTML = '';
-  }
-
-  function openViewer(f){
-    const viewer = document.getElementById('viewer');
-    const content = document.getElementById('viewerContent');
-    document.getElementById('viewerFilename').textContent = titleFromFilename(f.filename);
-    document.getElementById('viewerMeta').textContent = `${f.subject} · ${f.category}${f.subcategory ? ' · '+f.subcategory : ''} · ${formatSize(f.size)}`;
-    document.getElementById('viewerDownload').onclick = () => triggerDownload(f);
-    content.innerHTML = `<div class="viewer__loading"><div class="ink-spinner"></div><p>turning to the page&hellip;</p></div>`;
-    viewer.hidden = false;
-
-    renderViewerContent(f, content).catch(err => {
-      content.innerHTML = fallbackHTML(f, "This page wouldn't open for preview, but you can still download it.");
-    });
-  }
-
-  function fallbackHTML(f, message){
-    return `<div class="viewer__fallback">
-      <strong>${titleFromFilename(f.filename)}</strong>
-      <p>${message}</p>
-      <div style="display:flex; gap:10px;">
-        <button class="entry-btn entry-btn--dl" onclick="window.__downloadCurrent && window.__downloadCurrent()">download the file</button>
-        <a class="entry-btn" style="text-decoration:none; display:inline-flex; align-items:center;" href="${blobUrl(f.path)}" target="_blank" rel="noopener">open on GitHub</a>
+  function fileCardHtml(item, showPath) {
+    const ext = Viewers.extOf(item.path) || '—';
+    const tilt = ((hashInt(item.path) % 5) - 2) * 0.4;
+    const tapeRot = ((hashInt(item.path + 't') % 7) - 3);
+    return `<div class="item-card file-card" style="--tilt:${tilt}deg" data-file="${encodeURIComponent(item.path)}">
+      <span class="file-tape" style="--tape-color:${Viewers.badgeColor(item.path)}; --tape-rot:${tapeRot}deg"></span>
+      <div class="file-top">
+        <span class="file-ext-badge" style="--badge-color:${Viewers.badgeColor(item.path)}">${escapeHtml(ext)}</span>
+        <span class="file-name">${escapeHtml(baseName(item.path))}</span>
+      </div>
+      ${showPath ? `<span class="file-meta-row" style="margin-top:-2px;">${escapeHtml(parentOf(item.path) || '/')}</span>` : ''}
+      <div class="file-meta-row">
+        <span>${Viewers.formatBytes(item.size)}</span>
+      </div>
+      <div class="file-card-actions">
+        <button class="btn btn-ghost" data-view-file="${encodeURIComponent(item.path)}">View</button>
+        <button class="btn btn-primary" data-download-file="${encodeURIComponent(item.path)}">Download</button>
       </div>
     </div>`;
   }
 
-  async function renderViewerContent(f, content){
-    window.__downloadCurrent = () => triggerDownload(f);
-    const ext = f.ext;
-    const url = rawUrl(f.path);
-
-    if (["jpg","jpeg","png","gif","webp"].includes(ext)){
-      content.innerHTML = `<div class="viewer__img-wrap"><img src="${url}" alt="${f.filename}"></div>`;
-      return;
-    }
-
-    if (ext === "pdf"){
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('fetch failed');
-      const blob = await res.blob();
-      const objUrl = URL.createObjectURL(new Blob([blob], {type:'application/pdf'}));
-      content.innerHTML = `<embed src="${objUrl}" type="application/pdf" />`;
-      return;
-    }
-
-    if (ext === "docx"){
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('fetch failed');
-      const buf = await res.arrayBuffer();
-      const result = await window.mammoth.convertToHtml({ arrayBuffer: buf });
-      content.innerHTML = `<div class="docx-page">${result.value}</div>`;
-      return;
-    }
-
-    if (ext === "csv"){
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('fetch failed');
-      const text = await res.text();
-      const parsed = window.Papa.parse(text.trim(), { skipEmptyLines: true });
-      const rows = parsed.data;
-      if (!rows.length){ content.innerHTML = fallbackHTML(f, "This sheet looks empty."); return; }
-      let html = '<div class="ledger-wrap"><table class="ledger-table"><thead><tr>';
-      rows[0].forEach(h => html += `<th>${h}</th>`);
-      html += '</tr></thead><tbody>';
-      rows.slice(1, 500).forEach(r => {
-        html += '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>';
-      });
-      html += '</tbody></table></div>';
-      if (rows.length > 501) html += `<p style="font-family:var(--mono); font-size:.75rem; color:var(--ink-faint); padding:0 20px;">showing first 500 of ${rows.length-1} rows — download for the full sheet</p>`;
-      content.innerHTML = html;
-      return;
-    }
-
-    if (ext === "txt"){
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('fetch failed');
-      const text = await res.text();
-      const div = document.createElement('div');
-      const pre = el('pre', 'note-page');
-      pre.textContent = text;
-      div.appendChild(pre);
-      content.innerHTML = '';
-      content.appendChild(pre);
-      return;
-    }
-
-    if (["ppt","pptx","doc"].includes(ext)){
-      const officeUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
-      content.innerHTML = `<div class="viewer__note">previewing via Microsoft Office viewer — very large decks may take a moment, or may only offer download</div><iframe src="${officeUrl}" allowfullscreen></iframe>`;
-      return;
-    }
-
-    content.innerHTML = fallbackHTML(f, "There's no in-browser preview for this file type yet.");
+  function hashInt(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h;
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  function wireGridCards(grid) {
+    qsa('[data-folder]', grid).forEach((c) => c.addEventListener('click', () => navigateFolder(decodeURIComponent(c.dataset.folder))));
+    qsa('[data-view-file]', grid).forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); navigateFile(decodeURIComponent(b.dataset.viewFile)); }));
+    qsa('[data-download-file]', grid).forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); downloadFile(decodeURIComponent(b.dataset.downloadFile)); }));
+    // clicking anywhere else on a file card also opens the viewer
+    qsa('.file-card', grid).forEach((c) => c.addEventListener('click', () => navigateFile(decodeURIComponent(c.dataset.file))));
+  }
+
+  /* ---------------------------------------------------------------- states */
+
+  function showState(name) {
+    el('state-loading').hidden = name !== 'loading';
+    el('state-error').hidden = name !== 'error';
+    el('state-empty').hidden = name !== 'empty';
+    el('state-no-results').hidden = name !== 'no-results';
+    el('card-grid').hidden = name !== 'grid';
+  }
+  function renderLoadingState() { showState('loading'); }
+
+  function renderErrorDetails() {
+    const err = state.loadError;
+    const glyph = el('error-glyph'), title = el('error-title'), desc = el('error-desc');
+    if (err && err.name === 'RateLimitError') {
+      glyph.textContent = '⏳';
+      title.textContent = "GitHub's asking us to slow down";
+      desc.textContent = err.resetAt
+        ? `The public API rate limit kicked in — it resets around ${err.resetAt.toLocaleTimeString()}.`
+        : "The public API rate limit kicked in. It resets on a rolling basis, so try again shortly.";
+    } else if (err && err.name === 'NotFoundError') {
+      glyph.textContent = '🔍';
+      title.textContent = 'Repository not found';
+      desc.textContent = 'Double-check the owner, repo name, and branch in js/github-api.js.';
+    } else if (err && err.name === 'NetworkError') {
+      glyph.textContent = '🔌';
+      title.textContent = 'No connection to GitHub';
+      desc.textContent = 'Check your internet connection and try again.';
+    } else {
+      glyph.textContent = '✂️';
+      title.textContent = 'Something tore the page';
+      desc.textContent = 'The archive couldn\u2019t be reached right now.';
+    }
+  }
+
+  /* ---------------------------------------------------------------- viewer overlay */
+
+  function openViewer(file) {
+    el('viewer-overlay').hidden = false;
+    document.body.style.overflow = 'hidden';
+    el('viewer-badge').textContent = (Viewers.extOf(file.path) || 'file').toUpperCase();
+    el('viewer-filename').textContent = baseName(file.path);
+    el('viewer-path').textContent = file.path;
+    el('viewer-github-link').href = GitHubAPI.githubBlobUrl(file.path);
+    const dl = el('viewer-download-link');
+    dl.href = GitHubAPI.rawUrl(file.path);
+    dl.onclick = (e) => { e.preventDefault(); downloadFile(file.path); };
+    Viewers.render(el('viewer-body'), file);
+  }
+
+  function closeViewer() {
+    const overlay = el('viewer-overlay');
+    if (!overlay.hidden) {
+      overlay.hidden = true;
+      document.body.style.overflow = '';
+      el('viewer-body').innerHTML = '';
+    }
+  }
+
+  /* ---------------------------------------------------------------- download */
+
+  async function downloadFile(path) {
+    const url = GitHubAPI.rawUrl(path);
+    const kind = Viewers.classify(path);
+    const name = baseName(path);
+    if (kind !== 'pdf' && kind !== 'image') {
+      // server sends these as application/octet-stream, so a direct link downloads reliably
+      window.open(url, '_blank');
+      return;
+    }
+    showToast('Preparing download…');
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    } catch (e) {
+      showToast('Download failed — opening it in a new tab instead.');
+      window.open(url, '_blank');
+    }
+  }
+
+  /* ---------------------------------------------------------------- toast */
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = el('toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+  }
+
+  /* ---------------------------------------------------------------- static UI wiring (search, filters, buttons) */
+
+  function wireStaticUI() {
+    el('btn-open-journal').addEventListener('click', () => navigateFolder(''));
+    el('btn-home').addEventListener('click', () => goTo('/'));
+    el('btn-close-viewer').addEventListener('click', () => navigateFolder(state.currentPath));
+    el('viewer-overlay').addEventListener('click', (e) => { if (e.target.id === 'viewer-overlay') navigateFolder(state.currentPath); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !el('viewer-overlay').hidden) navigateFolder(state.currentPath); });
+    el('btn-retry').addEventListener('click', retryLoad);
+
+    const searchInput = el('search-input');
+    let searchDebounce = null;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        state.searchQuery = searchInput.value.trim();
+        el('search-clear').hidden = !state.searchQuery;
+        if (state.tree) { renderBreadcrumb(); renderGrid(); }
+      }, 150);
+    });
+    el('search-clear').addEventListener('click', () => {
+      searchInput.value = '';
+      state.searchQuery = '';
+      el('search-clear').hidden = true;
+      if (state.tree) { renderBreadcrumb(); renderGrid(); }
+      searchInput.focus();
+    });
+
+    const filterBtn = el('btn-toggle-filters');
+    filterBtn.addEventListener('click', () => {
+      const bar = el('filter-bar');
+      const expanded = filterBtn.getAttribute('aria-expanded') === 'true';
+      bar.hidden = expanded;
+      filterBtn.setAttribute('aria-expanded', String(!expanded));
+    });
+
+    const groups = ['PDF', 'Images', 'Presentations', 'Documents', 'Spreadsheets', 'Code & Notes', 'Other'];
+    const chipRow = el('type-filters');
+    chipRow.innerHTML = `<button class="chip active" data-group="">All</button>` +
+      groups.map((g) => `<button class="chip" data-group="${g}">${g}</button>`).join('');
+    qsa('.chip', chipRow).forEach((chip) => {
+      chip.addEventListener('click', () => {
+        qsa('.chip', chipRow).forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.activeFilter = chip.dataset.group || null;
+        if (state.tree) renderGrid();
+      });
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  document.addEventListener('DOMContentLoaded', boot);
 })();

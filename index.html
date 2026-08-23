@@ -3,102 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Semester IV — A Field Journal</title>
-<meta name="description" content="A field journal through Semester IV: Database, Linear Algebra, Machine Learning, Operating Systems, Psychology and Entrepreneurship — every lecture, lab and note, browsable and downloadable.">
+<title>Semester IV — Field Journal</title>
+<meta name="description" content="A personal digital diary and archive for Semester IV coursework, rendered live from GitHub.">
 
+<!-- Fonts: a handwritten display face used sparingly, a warm serif for reading, a mono face for file metadata -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%92%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- ============ COVER ============ -->
-<section id="cover" class="cover">
-  <div class="cover__texture"></div>
-  <div class="cover__spine"></div>
-  <div class="cover__ribbon" aria-hidden="true"></div>
-  <div class="cover__stamp" aria-hidden="true">2023&ndash;BS&ndash;AI&ndash;017</div>
+<!-- Paper texture + grain overlay, sits behind everything -->
+<div class="paper-texture" aria-hidden="true"></div>
 
-  <div class="cover__content">
-    <p class="cover__eyebrow">a field journal kept by</p>
-    <h1 class="cover__title">Semester&nbsp;IV</h1>
-    <p class="cover__subtitle">Database &middot; Linear Algebra &middot; Machine Learning<br>
-    Operating Systems &middot; Psychology &middot; Entrepreneurship</p>
-    <button id="openJournal" class="cover__open">
-      <span>Open the Journal</span>
-      <svg width="22" height="14" viewBox="0 0 22 14" fill="none"><path d="M1 7H21M21 7L15 1M21 7L15 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <p class="cover__source">every lecture, lab and note from<br><a href="https://github.com/hamnasz/Semester-IV" target="_blank" rel="noopener">github.com/hamnasz/Semester-IV</a></p>
+<!-- ============================= COVER ============================= -->
+<section id="view-cover" class="view view-cover" data-view="cover">
+  <div class="cover-inner">
+    <div class="cover-stamp" aria-hidden="true">
+      <svg viewBox="0 0 120 120" class="stamp-ring">
+        <circle cx="60" cy="60" r="54" />
+        <text><textPath href="#stamp-path">• SEMESTER ARCHIVE • FIELD NOTES • </textPath></text>
+        <path id="stamp-path" d="M 60,60 m -44,0 a 44,44 0 1,1 88,0 a 44,44 0 1,1 -88,0" fill="none"/>
+      </svg>
+      <span class="stamp-center">IV</span>
+    </div>
+
+    <p class="cover-eyebrow">a running field journal, kept in public</p>
+    <h1 class="cover-title">
+      <span class="cover-title-line">Semester</span>
+      <span class="cover-title-line cover-title-hand">Four</span>
+    </h1>
+    <p class="cover-sub">
+      Every lecture slide, lab manual, scanned page and half-finished note from this term,
+      pulled straight from <code class="repo-tag">hamnasz/Semester-IV</code> and kept exactly
+      as it was left — nothing copied, nothing staged, nothing hardcoded.
+    </p>
+
+    <div class="cover-actions">
+      <button class="btn btn-primary btn-wax" id="btn-open-journal">
+        <span>Open the Journal</span>
+        <svg viewBox="0 0 24 24" class="icon-arrow"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+      </button>
+      <a class="btn btn-ghost" href="https://github.com/hamnasz/Semester-IV" target="_blank" rel="noopener">
+        View source on GitHub
+      </a>
+    </div>
+
+    <div class="cover-meta" id="cover-meta">
+      <div class="meta-chip skeleton-chip"><span class="skeleton-line"></span></div>
+      <div class="meta-chip skeleton-chip"><span class="skeleton-line"></span></div>
+      <div class="meta-chip skeleton-chip"><span class="skeleton-line"></span></div>
+    </div>
+
+    <div class="stitch-divider" aria-hidden="true"></div>
+
+    <div class="cover-toc">
+      <p class="toc-label">Table of Contents</p>
+      <ol class="toc-list" id="toc-list">
+        <li class="toc-skel"><span class="skeleton-line"></span></li>
+        <li class="toc-skel"><span class="skeleton-line"></span></li>
+        <li class="toc-skel"><span class="skeleton-line"></span></li>
+        <li class="toc-skel"><span class="skeleton-line"></span></li>
+      </ol>
+    </div>
+
+    <p class="cover-footnote">
+      Rebuilt on every visit straight from the GitHub REST API — new files show up here the
+      moment they're pushed, no rebuild step required.
+    </p>
   </div>
 </section>
 
-<!-- ============ JOURNAL (main app) ============ -->
-<div id="journal" class="journal" hidden>
+<!-- ============================= ARCHIVE ============================= -->
+<section id="view-archive" class="view view-archive" data-view="archive" hidden>
 
-  <header class="journal__masthead">
-    <button id="toCover" class="masthead__back" title="Back to cover" aria-label="Back to cover">&#8617;</button>
-    <div class="masthead__title">
-      <span class="masthead__hand">Semester IV</span>
-      <span class="masthead__meta">field journal &middot; <span id="fileCount">106</span> entries</span>
+  <header class="archive-header">
+    <button class="brand-mark" id="btn-home" title="Back to cover">
+      <span class="brand-glyph">📔</span>
+      <span class="brand-text">Semester IV<small>Field Journal</small></span>
+    </button>
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" class="icon-search" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="search" id="search-input" class="search-input" placeholder="Search every file in the archive…" autocomplete="off">
+      <button class="search-clear" id="search-clear" hidden>&times;</button>
     </div>
-    <div class="masthead__search">
-      <input id="searchInput" type="text" placeholder="search the index&hellip;" autocomplete="off">
-      <div id="searchResults" class="search-results" hidden></div>
-    </div>
+
+    <button class="btn btn-icon-label" id="btn-toggle-filters" aria-expanded="false">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      <span>Filter</span>
+    </button>
   </header>
 
-  <div class="journal__body">
-    <!-- Binder tabs -->
-    <nav id="tabs" class="tabs" aria-label="Subjects"></nav>
-
-    <!-- Open double-page spread -->
-    <main class="spread">
-      <div class="spread__page spread__page--left">
-        <div class="page-curl page-curl--left" aria-hidden="true"></div>
-        <div id="tocPage" class="page-inner"></div>
-      </div>
-      <div class="spread__fold" aria-hidden="true"></div>
-      <div class="spread__page spread__page--right">
-        <div class="page-curl page-curl--right" aria-hidden="true"></div>
-        <div id="entriesPage" class="page-inner"></div>
-      </div>
-    </main>
+  <div class="filter-bar" id="filter-bar" hidden>
+    <span class="filter-label">Show:</span>
+    <div class="chip-row" id="type-filters"></div>
   </div>
 
-  <footer class="journal__footer">
-    <span>kept with care by Humna &middot; BS Artificial Intelligence, 2023&ndash;2027</span>
-  </footer>
-</div>
-
-<!-- ============ VIEWER OVERLAY ============ -->
-<div id="viewer" class="viewer" hidden>
-  <div class="viewer__backdrop" id="viewerBackdrop"></div>
-  <div class="viewer__page">
-    <div class="viewer__bar">
-      <button id="viewerClose" class="viewer__tab viewer__tab--close">&larr; back to journal</button>
-      <div class="viewer__title">
-        <span id="viewerFilename">&nbsp;</span>
-        <span id="viewerMeta" class="viewer__submeta"></span>
-      </div>
-      <button id="viewerDownload" class="viewer__tab viewer__tab--download">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3V16M12 16L7 11M12 16L17 11M5 21H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        download
-      </button>
+  <!-- horizontal "manila folder tabs" for top level subjects -->
+  <nav class="chapter-rail" id="chapter-rail" aria-label="Subjects">
+    <div class="chapter-rail-inner" id="chapter-rail-inner">
+      <div class="tab-skel"></div><div class="tab-skel"></div><div class="tab-skel"></div>
     </div>
-    <div id="viewerContent" class="viewer__content">
-      <div class="viewer__loading">
-        <div class="ink-spinner"></div>
-        <p>turning to the page&hellip;</p>
+  </nav>
+
+  <div class="breadcrumb-strip" id="breadcrumb-strip" aria-label="Breadcrumb"></div>
+
+  <main class="archive-main" id="archive-main">
+    <div class="state-loading" id="state-loading">
+      <div class="loader-book" aria-hidden="true">
+        <div class="loader-page"></div>
+        <div class="loader-page"></div>
+        <div class="loader-page"></div>
       </div>
+      <p class="loader-caption" id="loader-caption">Fetching the repository tree from GitHub…</p>
+    </div>
+
+    <div class="state-error" id="state-error" hidden>
+      <div class="error-card">
+        <span class="error-glyph" id="error-glyph">✂️</span>
+        <h3 id="error-title">Something tore the page</h3>
+        <p id="error-desc">The archive couldn't be reached.</p>
+        <button class="btn btn-primary" id="btn-retry">Try again</button>
+      </div>
+    </div>
+
+    <div class="state-empty" id="state-empty" hidden>
+      <div class="empty-card">
+        <span class="empty-glyph">📄</span>
+        <h3>This chapter hasn't been written yet</h3>
+        <p>No files live in this folder.</p>
+      </div>
+    </div>
+
+    <div class="state-empty" id="state-no-results" hidden>
+      <div class="empty-card">
+        <span class="empty-glyph">🔍</span>
+        <h3>No pages match that search</h3>
+        <p id="no-results-desc">Try a different word, or clear the filters above.</p>
+      </div>
+    </div>
+
+    <div class="card-grid" id="card-grid" hidden></div>
+  </main>
+</section>
+
+<!-- ============================= FILE VIEWER OVERLAY ============================= -->
+<div class="viewer-overlay" id="viewer-overlay" hidden>
+  <div class="viewer-sheet" role="dialog" aria-modal="true" aria-labelledby="viewer-filename">
+    <header class="viewer-topbar">
+      <div class="viewer-titles">
+        <span class="viewer-badge" id="viewer-badge">FILE</span>
+        <h2 class="viewer-filename" id="viewer-filename">filename.ext</h2>
+        <span class="viewer-path" id="viewer-path"></span>
+      </div>
+      <div class="viewer-actions">
+        <a class="btn btn-ghost btn-sm" id="viewer-github-link" target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn btn-primary btn-sm" id="viewer-download-link" download>Download</a>
+        <button class="btn btn-icon" id="btn-close-viewer" aria-label="Close">&times;</button>
+      </div>
+    </header>
+    <div class="viewer-body" id="viewer-body">
+      <!-- filled dynamically per file type -->
     </div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/mammoth/mammoth.browser.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/papaparse/papaparse.min.js"></script>
-<script src="js/subjects.js"></script>
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/github-api.js"></script>
+<script src="js/viewers.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,53 +1,114 @@
 # Semester IV — Field Journal
 
-A diary-styled frontend for [`hamnasz/Semester-IV`](https://github.com/hamnasz/Semester-IV) —
-every lecture, lab, outline and note, browsable and previewable in the browser, with a
-one-click download for each file.
+A static "academic diary" frontend for [`hamnasz/Semester-IV`](https://github.com/hamnasz/Semester-IV) —
+every lecture slide, lab manual, scanned note, and half-finished assignment from the term,
+browsable, searchable, and previewable straight in the browser.
 
-**This is a static site with no build step.** It doesn't store any copies of your course
-files — `js/manifest.json` just lists paths, and everything is rendered on the fly straight
-from `raw.githubusercontent.com/hamnasz/Semester-IV`. That keeps this repo tiny and fast to
-push, no matter how large the course material repo gets.
+**There is no manifest, no build step, and no copy of the course files in this repo.**
+On every visit, the app calls the GitHub REST API live to fetch the *current* file tree of
+`Semester-IV`, then renders it. Push a new file to that repo and it shows up here the next
+time someone opens the journal — nothing to regenerate, nothing to redeploy.
 
-## How it renders each file type
-| Type | How it's shown |
+```
+index.html          the app shell — cover page + archive + file-viewer overlay
+css/style.css        the entire design system (paper texture, cards, states, responsive rules)
+js/github-api.js      the ONLY file that talks to GitHub — tree fetch, raw/blob URL builders
+js/viewers.js         file-type detection + all inline renderers and "clean fallback" cards
+js/app.js             routing, search/filter, card rendering, the viewer overlay, downloads
+test/                 an optional headless smoke test (see "Running the tests" below)
+```
+
+## How it works
+
+1. **On load**, `js/app.js` calls `GitHubAPI.fetchTree()`, which hits
+   `GET /repos/hamnasz/Semester-IV/git/trees/main?recursive=1` — one API call returns the
+   *entire* file tree (every folder and file, with path + size). That single response is kept
+   in memory for the rest of the session; every click, search, and filter afterwards is pure
+   client-side filtering of that array. No manifest file, no per-folder round trips.
+2. If a repository is ever too large for GitHub's recursive-tree response, the app
+   automatically falls back to walking the (non-recursive) `contents` API folder by folder,
+   so it keeps working rather than silently truncating.
+3. **File previews** are fetched on demand, straight from
+   `raw.githubusercontent.com/hamnasz/Semester-IV/main/<path>`, only when you open a file —
+   nothing is pre-downloaded.
+
+### Repointing this at a different repository
+
+Everything is driven by one object at the top of `js/github-api.js`:
+
+```js
+const CONFIG = { owner: 'hamnasz', repo: 'Semester-IV', branch: 'main' };
+```
+
+Change those three values and the whole app — cover page, subjects, search, viewers — repoints
+itself at any public repo with zero other edits.
+
+## What renders inline vs. what falls back
+
+| Type | Behavior |
 |---|---|
-| `.pdf` | fetched and rendered inline via the browser's native PDF viewer |
-| `.docx` | converted to clean HTML in-browser with [mammoth.js](https://github.com/mwilliamson/mammoth.js) — reads like an actual page |
-| `.pptx` / `.ppt` | previewed via the Microsoft Office Online viewer (very large decks may only offer download) |
-| `.csv` | parsed with [PapaParse](https://www.papaparse.com/) and shown as a table |
-| `.jpg` / `.jpeg` / `.png` | shown directly |
-| `.txt` | shown as plain text |
-| anything else | download-only, with a link to view it on GitHub |
+| `.pdf` | fetched and shown inline via the browser's native PDF viewer (very large PDFs — over 20 MB — skip the inline fetch and open directly in a new tab instead, so a huge textbook scan doesn't stall the page) |
+| `.png` `.jpg` `.jpeg` `.gif` `.webp` `.svg` | shown directly |
+| `.md` | rendered with a small built-in Markdown renderer (headings, lists, tables, links, images, code fences — no external library) |
+| `.txt` / code files (`.js` `.py` `.json` `.css` `.html` …) | shown as plain formatted text |
+| `.csv` | parsed and shown as a table (first 500 rows) |
+| `.ipynb` | rendered cell-by-cell (markdown cells + code cells with their captured output) |
+| `.docx` `.doc`, `.ppt` `.pptx`, `.xlsx` `.xls` | a clean fallback card — file info, **View on GitHub**, **Download**, and for Word/PowerPoint files an optional one-click **online preview** via the Microsoft Office viewer |
+| anything else | a generic download card |
 
-Every entry also has a **download** button that fetches the file and saves it locally.
+Every file — inline or fallback — also gets **View** and **Download** actions in its card and
+in the full-screen viewer.
 
-## File structure
-```
-index.html          the whole app shell (cover + journal + viewer)
-css/style.css        all styling
-js/subjects.js       per-subject colors/labels/ordering — edit this to re-theme a subject
-js/manifest.json     generated list of every file (path, subject, category, size…)
-js/app.js            navigation, search, and rendering logic
-regenerate-manifest.py   re-scan the course repo and rebuild manifest.json
-```
+## Local development
 
-## Updating the file list later
-Whenever files are added to or removed from the `Semester-IV` repo:
+No build tooling is required — it's plain HTML/CSS/JS. Because the app makes real `fetch()`
+calls to the GitHub API, serve it over `http://`, rather than opening `index.html` directly
+as a `file://` URL:
+
 ```bash
-git clone https://github.com/hamnasz/Semester-IV.git /tmp/semester-iv
-python3 regenerate-manifest.py /tmp/semester-iv
-git add js/manifest.json
-git commit -m "Update file index"
-git push
+npm start
+# or, without npm: python3 -m http.server 8080
 ```
 
-## Deploying with GitHub Pages
-1. Push this folder's contents to a GitHub repo (root of the repo, or a `docs/` folder — see below).
-2. In that repo: **Settings → Pages → Build and deployment → Source: Deploy from a branch**,
-   pick the branch and folder you pushed to, save.
-3. Your site will be live at `https://<username>.github.io/<repo>/` within a minute or two.
+Then visit `http://localhost:8080`.
 
-## Re-theming a subject
-Colors, short labels and the little italic note under each subject's table of contents all
-live in `js/subjects.js` — no other file needs to change.
+## Running the tests
+
+There's an optional headless smoke test (using [jsdom](https://github.com/jsdom/jsdom)) that
+loads the real app, fetches the live repo tree, and clicks through cover → browse → search →
+filter → every file-viewer path, failing on any uncaught JS error:
+
+```bash
+npm install     # installs jsdom as a dev dependency (not needed to run the site itself)
+npm test
+```
+
+The GitHub API's unauthenticated rate limit is 60 requests/hour per IP — the test caches the
+first successful response in `test/.fixture-cache.json` and reuses it on later runs if you hit
+that limit while iterating.
+
+## Deploying to GitHub Pages
+
+1. Push the contents of this folder (`index.html`, `css/`, `js/`) to the root of a repository —
+   this can be its own small repo, or the `docs/` folder of an existing one.
+2. In that repository: **Settings → Pages → Build and deployment → Source: Deploy from a
+   branch**, pick the branch (and `docs/` folder if you used one), and save.
+3. The site goes live at `https://<your-username>.github.io/<repo-name>/` within a minute or
+   two. All asset paths in this project are relative, so it works whether it's served from the
+   domain root or a sub-path.
+4. That's the entire deployment. There's no manifest to regenerate afterwards — new files
+   pushed to `hamnasz/Semester-IV` just appear the next time the journal is opened.
+
+### A note on API rate limits
+
+The unauthenticated GitHub API allows 60 requests/hour per visitor IP, and this app uses only
+one or two of them per page load (one for the file tree, one for repo metadata). That's ample
+for a personal archive. If you ever deploy this in front of heavy traffic and start seeing the
+"GitHub's asking us to slow down" error state, the standard fix is routing requests through a
+small authenticated proxy — out of scope for a static personal site, but worth knowing about.
+
+## Accessibility & responsiveness
+
+Keyboard focus is visible throughout, the file viewer is a proper modal dialog (closes on
+<kbd>Esc</kbd> or backdrop click), animations respect `prefers-reduced-motion`, and the layout
+is responsive from phone widths up.
