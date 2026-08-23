@@ -53,7 +53,7 @@ itself at any public repo with zero other edits.
 | `.txt` / code files (`.js` `.py` `.json` `.css` `.html` …) | shown as plain formatted text |
 | `.csv` | parsed and shown as a table (first 500 rows) |
 | `.ipynb` | rendered cell-by-cell (markdown cells + code cells with their captured output) |
-| `.docx` `.doc`, `.ppt` `.pptx`, `.xlsx` `.xls` | a clean fallback card — file info, **View on GitHub**, **Download**, and for Word/PowerPoint files an optional one-click **online preview** via the Microsoft Office viewer |
+| `.docx` `.doc`, `.ppt` `.pptx`, `.xlsx` `.xls` | loads straight into Microsoft's online Office viewer — no click needed — alongside **View on GitHub** and **Download** actions |
 | anything else | a generic download card |
 
 Every file — inline or fallback — also gets **View** and **Download** actions in its card and

@@ -9,6 +9,7 @@
 const Viewers = (() => {
 
   const LARGE_FILE_BYTES = 20 * 1024 * 1024; // above this, skip inline fetch, offer a direct-open link instead
+  let currentPdfBlobUrl = null; // tracked so we can revoke the previous one before minting a new one
 
   const EXT_GROUPS = {
     image: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp'],
@@ -274,15 +275,24 @@ const Viewers = (() => {
       if (kind === 'pdf') {
         if (file.size > LARGE_FILE_BYTES) {
           container.classList.add('pad');
-          container.innerHTML = fallbackHtml(file, ghUrl, url, `This PDF is ${formatBytes(file.size)} — too large to preview inline here, so it opens in your browser's own PDF viewer in a new tab instead.`, false, 'Open PDF');
-          wireFallback(container, file, ghUrl, url);
+          container.innerHTML = fallbackHtml(file, ghUrl, url, `This PDF is ${formatBytes(file.size)} — too large to preview inline here, so it opens in your browser's own PDF viewer in a new tab instead.`, 'Open PDF');
           return;
         }
         const res = await fetch(url);
         if (!res.ok) throw new Error('fetch failed');
-        const blob = await res.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        container.innerHTML = `<iframe class="viewer-frame" src="${blobUrl}" title="${escapeHtml(file.path)}"></iframe>`;
+        // GitHub's raw host serves every file (including PDFs) with
+        // `Content-Type: application/octet-stream`, so a plain `res.blob()`
+        // inherits that generic type. A blob with an unrecognized MIME type
+        // dropped into an iframe makes browsers fall back to downloading it
+        // instead of rendering it — which is what produced the "downloads a
+        // weird file instead of previewing" symptom. Reading the raw bytes
+        // and re-wrapping them in a Blob explicitly typed as `application/pdf`
+        // is what lets the browser's built-in PDF viewer take over inline.
+        const bytes = await res.arrayBuffer();
+        const blob = new Blob([bytes], { type: 'application/pdf' });
+        if (currentPdfBlobUrl) URL.revokeObjectURL(currentPdfBlobUrl);
+        currentPdfBlobUrl = URL.createObjectURL(blob);
+        container.innerHTML = `<iframe class="viewer-frame" src="${currentPdfBlobUrl}" title="${escapeHtml(file.path)}"></iframe>`;
         return;
       }
 
@@ -323,11 +333,21 @@ const Viewers = (() => {
         return;
       }
 
-      // document / presentation / spreadsheet / other → clean fallback
+      if (kind === 'document' || kind === 'presentation' || kind === 'spreadsheet') {
+        container.classList.add('pad');
+        const kindLabel = { document: 'Word document', presentation: 'PowerPoint deck', spreadsheet: 'spreadsheet' }[kind];
+        if (file.size > LARGE_FILE_BYTES) {
+          container.innerHTML = fallbackHtml(file, ghUrl, url, `This ${kindLabel} is ${formatBytes(file.size)} — too large for the online preview. View it on GitHub or download it instead.`);
+          return;
+        }
+        // Loads straight into the online viewer — no extra click required.
+        container.innerHTML = officeAutoHtml(file, ghUrl, url, kindLabel);
+        return;
+      }
+
+      // anything else → generic download card
       container.classList.add('pad');
-      const kindLabel = { document: 'Word document', presentation: 'PowerPoint deck', spreadsheet: 'spreadsheet' }[kind] || 'file';
-      container.innerHTML = fallbackHtml(file, ghUrl, url, `This ${kindLabel} can't be rendered inline here — view it on GitHub or download it to open in its native app.`, kind === 'document' || kind === 'presentation');
-      wireFallback(container, file, ghUrl, url);
+      container.innerHTML = fallbackHtml(file, ghUrl, url, `This file can't be rendered inline here — view it on GitHub or download it to open in its native app.`);
 
     } catch (err) {
       container.classList.add('pad');
@@ -335,7 +355,7 @@ const Viewers = (() => {
     }
   }
 
-  function fallbackHtml(file, ghUrl, rawUrl, message, offerOffice = false, primaryLabel = 'Download') {
+  function fallbackHtml(file, ghUrl, rawUrl, message, primaryLabel = 'Download') {
     return `
       <div class="fallback-card">
         <span class="fallback-icon">${fileIcon(file.path)}</span>
@@ -345,25 +365,36 @@ const Viewers = (() => {
           <a class="btn btn-ghost btn-sm" href="${ghUrl}" target="_blank" rel="noopener">View on GitHub</a>
           <a class="btn btn-primary btn-sm" href="${rawUrl}" target="_blank" rel="noopener" download>${primaryLabel}</a>
         </div>
-        ${offerOffice ? '<button class="office-toggle" data-office-toggle>Try an online preview →</button><div class="office-frame-wrap" data-office-frame hidden></div>' : ''}
       </div>`;
   }
 
-  function wireFallback(container, file, ghUrl, rawUrl) {
-    const toggle = container.querySelector('[data-office-toggle]');
-    if (!toggle) return;
-    toggle.addEventListener('click', () => {
-      const wrap = container.querySelector('[data-office-frame]');
-      if (wrap.hidden) {
-        wrap.hidden = false;
-        wrap.innerHTML = `<iframe class="viewer-frame" src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(rawUrl)}" title="Online preview"></iframe>`;
-        toggle.textContent = 'Hide online preview';
-      } else {
-        wrap.hidden = true;
-        wrap.innerHTML = '';
-        toggle.textContent = 'Try an online preview →';
-      }
-    });
+  /**
+   * Word/PowerPoint/Excel files load straight into Microsoft's online
+   * viewer — no "try an online preview" click required. The viewer fetches
+   * the file itself server-side, so GitHub's raw-host X-Frame-Options
+   * (which is what forces the PDF path below through a blob: URL) never
+   * comes into play here.
+   */
+  function officeAutoHtml(file, ghUrl, rawUrl, kindLabel) {
+    const officeSrc = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(rawUrl)}`;
+    return `
+      <div class="office-auto">
+        <div class="office-auto-head">
+          <span class="fallback-icon">${fileIcon(file.path)}</span>
+          <div class="office-auto-title">
+            <h3>${escapeHtml(file.path.split('/').pop())}</h3>
+            <p>${kindLabel} · ${formatBytes(file.size)}</p>
+          </div>
+          <div class="fallback-actions">
+            <a class="btn btn-ghost btn-sm" href="${ghUrl}" target="_blank" rel="noopener">View on GitHub</a>
+            <a class="btn btn-primary btn-sm" href="${rawUrl}" target="_blank" rel="noopener" download>Download</a>
+          </div>
+        </div>
+        <div class="office-frame-wrap" data-office-frame>
+          <iframe class="viewer-frame" src="${officeSrc}" title="Online preview" data-office-iframe></iframe>
+        </div>
+        <p class="office-auto-note">Previewed via Microsoft's online viewer. If it doesn't load, view on GitHub or download the file instead.</p>
+      </div>`;
   }
 
   return { classify, filterGroup, fileIcon, badgeColor, hashColor, formatBytes, extOf, render };

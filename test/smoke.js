@@ -150,21 +150,14 @@ async function main() {
   if (pptxFile) {
     window.location.hash = toHash(pptxFile.path);
     await wait(200);
-    results['pptx shows clean fallback card'] = window.document.querySelector('.fallback-card') !== null;
-    const officeToggle = window.document.querySelector('[data-office-toggle]');
-    results['pptx offers office-preview toggle'] = officeToggle !== null;
-    if (officeToggle) {
-      officeToggle.click();
-      await wait(50);
-      results['office preview toggle reveals iframe'] = !window.document.querySelector('[data-office-frame]').hidden;
-    }
+    results['pptx online preview loads automatically'] = window.document.querySelector('[data-office-iframe]') !== null;
   }
 
   const docxFile = findFirst((p) => p.endsWith('.docx'));
   if (docxFile) {
     window.location.hash = toHash(docxFile.path);
     await wait(200);
-    results['docx shows clean fallback card'] = window.document.querySelector('.fallback-card') !== null;
+    results['docx online preview loads automatically'] = window.document.querySelector('[data-office-iframe]') !== null;
   }
 
   const bigPdf = rawTree.tree
