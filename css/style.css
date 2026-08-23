@@ -84,6 +84,14 @@ svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1
 
 ::selection { background: var(--brass); color: var(--paper); }
 
+/* Some components below set their own `display` (flex/grid) on the very
+   element that also gets toggled via the `hidden` attribute. At equal
+   specificity an author rule beats the browser's built-in `[hidden]`
+   styling, so without this, "hidden" elements (the file viewer, loading/
+   error/empty states, the card grid) would stay visible. This guarantees
+   hidden always wins. */
+[hidden] { display: none !important; }
+
 :focus-visible {
   outline: 2px solid var(--brick);
   outline-offset: 3px;
