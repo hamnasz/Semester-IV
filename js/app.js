@@ -5,6 +5,34 @@
    ========================================================================= */
 
 (() => {
+  /**
+   * Only these top-level folders from the source repo are shown in the
+   * journal — everything else (other subjects, stray root files, etc.)
+   * is filtered out of the tree right after it's fetched, so every other
+   * part of the app (cover TOC, chapter rail, browse grid, search, file
+   * counts) automatically only ever sees these subjects. Matching is
+   * case-insensitive and trims whitespace so small naming quirks in the
+   * repo don't silently drop a subject.
+   */
+  const ALLOWED_SUBJECTS = [
+    'Database',
+    'Entrepreneurship',
+    'Linear Algebra',
+    'Machine Learning',
+    'Operating System',
+    'Psychology',
+    'Teaching of Holy Quran',
+  ];
+  const ALLOWED_SUBJECTS_SET = new Set(ALLOWED_SUBJECTS.map((s) => s.trim().toLowerCase()));
+
+  function isInAllowedSubject(path) {
+    const top = path.split('/')[0].trim().toLowerCase();
+    return ALLOWED_SUBJECTS_SET.has(top);
+  }
+  function filterToAllowedSubjects(tree) {
+    return tree.filter((item) => isInAllowedSubject(item.path));
+  }
+
   const state = {
     tree: null,        // flat [{path, type, size}] straight from the GitHub API
     meta: null,        // repo metadata (description, pushed_at, ...)
@@ -134,7 +162,7 @@
     if (meta.status === 'fulfilled') state.meta = meta.value;
 
     if (treeResult.status === 'fulfilled') {
-      state.tree = treeResult.value;
+      state.tree = filterToAllowedSubjects(treeResult.value);
       state.loadError = null;
     } else {
       state.loadError = treeResult.reason;

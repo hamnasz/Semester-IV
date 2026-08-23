@@ -103,7 +103,15 @@ async function main() {
   await wait(150);
   results['breadcrumb shows subject'] = window.document.getElementById('breadcrumb-strip').textContent.includes(firstSubjectPath);
 
-  const findFirst = (pred) => rawTree.tree.find((n) => n.type === 'blob' && pred(n.path));
+  // The app only shows a fixed allow-list of top-level subjects (see app.js).
+  // Read that back from what's actually rendered, so test fixtures picked
+  // from the raw (unfiltered) tree — like a root-level README.md — never
+  // get used to probe a viewer path the app itself would hide.
+  const visibleSubjects = new Set(
+    Array.from(window.document.querySelectorAll('.chapter-tab')).map((t) => t.textContent.trim())
+  );
+  const isVisible = (p) => visibleSubjects.has(p.split('/')[0]);
+  const findFirst = (pred) => rawTree.tree.find((n) => n.type === 'blob' && isVisible(n.path) && pred(n.path));
   const toHash = (p) => '#/file/' + p.split('/').map(encodeURIComponent).join('/');
 
   const mdFile = findFirst((p) => p.endsWith('.md'));
@@ -161,7 +169,7 @@ async function main() {
   }
 
   const bigPdf = rawTree.tree
-    .filter((n) => n.type === 'blob' && n.path.endsWith('.pdf'))
+    .filter((n) => n.type === 'blob' && isVisible(n.path) && n.path.endsWith('.pdf'))
     .sort((a, b) => (b.size || 0) - (a.size || 0))[0];
   if (bigPdf && bigPdf.size > 20 * 1024 * 1024) {
     window.location.hash = toHash(bigPdf.path);
