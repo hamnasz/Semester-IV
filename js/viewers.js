@@ -57,9 +57,9 @@ const Viewers = (() => {
   };
 
   const BADGE_COLOR = {
-    pdf: '#96402f', image: '#63744e', markdown: '#3a5a7a', text: '#5c6672',
-    code: '#26313c', notebook: '#3a5a7a', csv: '#4c5c3b', document: '#3a5a7a',
-    presentation: '#96402f', spreadsheet: '#4c5c3b', other: '#8b7355',
+    pdf: '#c1553f', image: '#5f9083', markdown: '#5b7c96', text: '#8a7863',
+    code: '#3a2c1e', notebook: '#7c6a9c', csv: '#748a55', document: '#5b7c96',
+    presentation: '#d1863f', spreadsheet: '#607a4a', other: '#a9825a',
   };
 
   function fileIcon(path) { return KIND_ICON[classify(path)] || KIND_ICON.other; }
@@ -71,7 +71,7 @@ const Viewers = (() => {
     for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
     return h % 360;
   }
-  function hashColor(str, sat = 42, light = 38) {
+  function hashColor(str, sat = 52, light = 42) {
     return `hsl(${hashHue(str)}, ${sat}%, ${light}%)`;
   }
 

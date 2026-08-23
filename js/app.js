@@ -302,7 +302,7 @@
 
   function folderCardHtml(item) {
     const count = descendantFileCount(item.path);
-    const tilt = ((hashInt(item.path) % 5) - 2) * 0.4;
+    const tilt = ((hashInt(item.path) % 5) - 2) * 0.7;
     return `<button class="item-card folder-card" style="--tilt:${tilt}deg" data-folder="${encodeURIComponent(item.path)}">
       <span class="folder-icon">🗂️</span>
       <span class="folder-name">${escapeHtml(baseName(item.path))}</span>
@@ -312,8 +312,8 @@
 
   function fileCardHtml(item, showPath) {
     const ext = Viewers.extOf(item.path) || '—';
-    const tilt = ((hashInt(item.path) % 5) - 2) * 0.4;
-    const tapeRot = ((hashInt(item.path + 't') % 7) - 3);
+    const tilt = ((hashInt(item.path) % 5) - 2) * 0.7;
+    const tapeRot = ((hashInt(item.path + 't') % 9) - 4) * 1.4;
     return `<div class="item-card file-card" style="--tilt:${tilt}deg" data-file="${encodeURIComponent(item.path)}">
       <span class="file-tape" style="--tape-color:${Viewers.badgeColor(item.path)}; --tape-rot:${tapeRot}deg"></span>
       <div class="file-top">
